@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>XMSS Post-Quantum Ethereum — Diagrama de Flujo</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #080E1A; font-family: Arial, sans-serif; color: #BFDBFE; padding: 24px; }
+  h1 { text-align: center; color: #F8FAFC; font-size: 22px; margin-bottom: 4px; }
+  .subtitle { text-align: center; color: #64748B; font-size: 12px; margin-bottom: 20px; }
+
+  .section {
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+  }
+  .section-label {
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .row { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px; }
+  .col { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+
+  .box {
+    border-radius: 6px;
+    border-width: 2px;
+    border-style: solid;
+    background: #0F1E3D;
+    min-width: 130px;
+    max-width: 180px;
+    font-size: 11.5px;
+  }
+  .box-title {
+    padding: 5px 8px;
+    font-weight: bold;
+    text-align: center;
+    border-radius: 4px 4px 0 0;
+    color: #080E1A;
+    font-size: 12px;
+  }
+  .box-body { padding: 6px 8px; }
+  .box-body div { color: #BFDBFE; text-align: center; line-height: 1.5; }
+
+  .arrow {
+    display: flex;
+    align-items: center;
+    color: #64748B;
+    font-size: 11px;
+    gap: 3px;
+    flex-shrink: 0;
+  }
+  .arrow-line { height: 2px; width: 28px; background: currentColor; }
+  .arrow-tip { font-size: 14px; line-height: 1; }
+  .arrow-label { font-size: 10px; color: #64748B; }
+
+  .varrow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #64748B;
+    margin: 2px 0;
+    font-size: 10px;
+    gap: 1px;
+  }
+  .varrow-line { width: 2px; height: 16px; background: currentColor; }
+
+  .cap { font-size: 10px; color: #64748B; text-align: center; margin-top: 2px; }
+
+  .gossip-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    font-size: 11px;
+    flex-wrap: wrap;
+  }
+  .tag {
+    background: #0F1E3D;
+    border: 1px solid #1E3A5F;
+    border-radius: 4px;
+    padding: 2px 8px;
+    color: #BFDBFE;
+    font-size: 10px;
+  }
+
+  footer { text-align: center; color: #1E3A5F; font-size: 10px; margin-top: 8px; }
+</style>
+</head>
+<body>
+
+<h1>XMSS Post-Quantum Ethereum</h1>
+<p class="subtitle">Cómo se relacionan todos los conceptos</p>
+
+<!-- 1 Problema -->
+<div class="section" style="border:1px dashed #EF444433; background:#EF444408">
+  <div class="section-label" style="color:#EF4444">① El Problema</div>
+  <div class="row">
+    <div class="box" style="border-color:#EF4444">
+      <div class="box-title" style="background:#EF4444">Ethereum hoy</div>
+      <div class="box-body"><div>BLS signatures</div><div>logaritmo discreto</div><div>vulnerable a Q</div></div>
+    </div>
+    <div class="arrow" style="color:#EF4444"><div class="arrow-line"></div><div class="arrow-label">amenaza</div><div class="arrow-tip">▶</div></div>
+    <div class="box" style="border-color:#EF4444">
+      <div class="box-title" style="background:#EF4444">Computadora cuántica</div>
+      <div class="box-body"><div>rompe BLS y ECDSA</div><div>no rompe hashes</div></div>
+    </div>
+    <div class="arrow" style="color:#F59E0B"><div class="arrow-line"></div><div class="arrow-label">necesita</div><div class="arrow-tip">▶</div></div>
+    <div class="box" style="border-color:#F59E0B">
+      <div class="box-title" style="background:#F59E0B">Reemplazo PQ</div>
+      <div class="box-body"><div>hash-based sigs</div><div>sin álgebra</div><div>SHA-3 / Poseidon2</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- 2 Paradoja -->
+<div class="section" style="border:1px dashed #A78BFA33; background:#A78BFA08">
+  <div class="section-label" style="color:#A78BFA">② Obstáculo Teórico — Random Oracle Paradox</div>
+  <div class="row">
+    <div class="box" style="border-color:#A78BFA">
+      <div class="box-title" style="background:#A78BFA">XMSS clásico</div>
+      <div class="box-body"><div>prueba en Random Oracle</div><div>hash = caja negra</div></div>
+    </div>
+    <div class="arrow" style="color:#A78BFA"><div class="arrow-line"></div><div class="arrow-label">conflicto con</div><div class="arrow-tip">▶</div></div>
+    <div class="box" style="border-color:#A78BFA">
+      <div class="box-title" style="background:#A78BFA">pqSNARK</div>
+      <div class="box-body"><div>hash como circuito</div><div>explícito paso a paso</div></div>
+    </div>
+    <div class="arrow" style="color:#10B981"><div class="arrow-line"></div><div class="arrow-label">solución →</div><div class="arrow-tip">▶</div></div>
+    <div class="box" style="border-color:#10B981">
+      <div class="box-title" style="background:#10B981">Modelo Estándar</div>
+      <div class="box-body"><div>SM-TCR</div><div>SM-PRE</div><div>SM-UD</div><div>SM-rTCR (nuevo)</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- 3 Framework -->
+<div class="section" style="border:1px dashed #F59E0B33; background:#F59E0B08">
+  <div class="section-label" style="color:#F59E0B">③ Framework Teórico (paper 055)</div>
+  <div class="row" style="align-items:flex-start">
+    <div class="col">
+      <div class="box" style="border-color:#F59E0B; max-width:200px">
+        <div class="box-title" style="background:#F59E0B">Incomparable Encodings</div>
+        <div class="box-body"><div>ningún codeword domina a otro</div><div>prueba genérica única</div><div>abstrae variantes de XMSS</div></div>
+      </div>
+      <div class="varrow" style="color:#F59E0B"><div class="varrow-line"></div><div>instancias ▼</div></div>
+      <div class="row">
+        <div class="box" style="border-color:#3B82F6">
+          <div class="box-title" style="background:#3B82F6">Winternitz</div>
+          <div class="box-body"><div>+ checksum</div><div>δ = 0 (nunca falla)</div><div>costo variable</div></div>
+        </div>
+        <div class="box" style="border-color:#10B981">
+          <div class="box-title" style="background:#10B981">TSW</div>
+          <div class="box-body"><div>sin checksum</div><div>suma fija = T</div><div>costo fijo ✓ SNARK</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="arrow" style="color:#F59E0B; align-self:center"><div class="arrow-line" style="width:40px"></div><div class="arrow-label">construye</div><div class="arrow-tip">▶</div></div>
+    <div class="col">
+      <div class="box" style="border-color:#F59E0B; max-width:200px">
+        <div class="box-title" style="background:#F59E0B">XMSS</div>
+        <div class="box-body"><div>OTS × L bajo árbol Merkle</div><div>1 firma por slot/época</div><div>Synchronized scheme</div></div>
+      </div>
+      <div class="varrow" style="color:#A78BFA"><div class="varrow-line"></div><div>prueba ▼</div></div>
+      <div class="box" style="border-color:#A78BFA; max-width:200px">
+        <div class="box-title" style="background:#A78BFA">SUF-CMA</div>
+        <div class="box-body"><div>ninguna firma nueva posible</div><div>ni para msg ya firmado</div><div>1ª prueba para XMSS ★</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 4 Agregacion -->
+<div class="section" style="border:1px dashed #3B82F633; background:#3B82F608">
+  <div class="section-label" style="color:#3B82F6">④ Agregación — de 1 firma a N firmas</div>
+  <div class="row">
+    <div class="box" style="border-color:#3B82F6">
+      <div class="box-title" style="background:#3B82F6">N validadores</div>
+      <div class="box-body"><div>firman con XMSS</div><div>σ₁, σ₂, ... σₙ</div><div>~2.2 KiB c/u</div></div>
+    </div>
+    <div class="arrow" style="color:#3B82F6"><div class="arrow-line"></div><div class="arrow-label">Aggregator</div><div class="arrow-tip">▶</div></div>
+    <div class="box" style="border-color:#3B82F6; max-width:190px">
+      <div class="box-title" style="background:#3B82F6">pqSNARK</div>
+      <div class="box-body"><div>prueba conocimiento de N firmas</div><div>Adaptive K. Soundness</div><div>Plonky3 / stwo (abierto)</div></div>
+    </div>
+    <div class="arrow" style="color:#3B82F6"><div class="arrow-line"></div><div class="arrow-label">resultado</div><div class="arrow-tip">▶</div></div>
+    <div class="box" style="border-color:#3B82F6">
+      <div class="box-title" style="background:#3B82F6">Multi-firma</div>
+      <div class="box-body"><div>σ̄ = proof SNARK</div><div>2–3 MB con FRI</div><div>&lt;1 MB con STIR/WHIR</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- 5 Repos -->
+<div class="section" style="border:1px dashed #10B98133; background:#10B98108">
+  <div class="section-label" style="color:#10B981">⑤ Implementación — 4 repos leanEthereum</div>
+  <div class="row">
+    <div class="col">
+      <div class="box" style="border-color:#10B981">
+        <div class="box-title" style="background:#10B981">leanSig</div>
+        <div class="box-body"><div>XMSS + TSW + Poseidon2</div><div>attestation_key</div><div>proposal_key</div></div>
+      </div>
+      <div class="cap">firma individual</div>
+    </div>
+    <div class="arrow" style="color:#10B981"><div class="arrow-line"></div><div class="arrow-tip">▶</div></div>
+    <div class="col">
+      <div class="box" style="border-color:#10B981">
+        <div class="box-title" style="background:#10B981">leanMultisig</div>
+        <div class="box-body"><div>partial aggregates</div><div>bitfield</div><div>qué validadores firmaron</div></div>
+      </div>
+      <div class="cap">agregación</div>
+    </div>
+    <div class="arrow" style="color:#10B981"><div class="arrow-line"></div><div class="arrow-tip">▶</div></div>
+    <div class="col">
+      <div class="box" style="border-color:#10B981">
+        <div class="box-title" style="background:#10B981">leanVm</div>
+        <div class="box-body"><div>pqSNARK proofs</div><div>recursión</div><div>log_inv_rate 1–4</div></div>
+      </div>
+      <div class="cap">pruebas recursivas</div>
+    </div>
+    <div class="arrow" style="color:#10B981"><div class="arrow-line"></div><div class="arrow-tip">▶</div></div>
+    <div class="col">
+      <div class="box" style="border-color:#10B981">
+        <div class="box-title" style="background:#10B981">leanSpec</div>
+        <div class="box-body"><div>spec ejecutable</div><div>SSZ containers</div><div>fork choice 3SF-mini</div></div>
+      </div>
+      <div class="cap">protocolo completo</div>
+    </div>
+  </div>
+</div>
+
+<!-- 6 Red -->
+<div class="section" style="border:1px dashed #BFDBFE33; background:#BFDBFE08">
+  <div class="section-label" style="color:#BFDBFE">⑥ Red — pq-devnet-4</div>
+  <div class="row">
+    <div class="col">
+      <div class="box" style="border-color:#BFDBFE">
+        <div class="box-title" style="background:#BFDBFE">Validador</div>
+        <div class="box-body"><div>firma attestation</div><div>publica en subnet</div></div>
+      </div>
+    </div>
+    <div class="arrow" style="color:#BFDBFE"><div class="arrow-line"></div><div class="arrow-tip">▶</div></div>
+    <div class="col">
+      <div class="box" style="border-color:#BFDBFE">
+        <div class="box-title" style="background:#BFDBFE">Aggregator</div>
+        <div class="box-body"><div>recolecta firmas</div><div>genera pqSNARK</div><div>coalescing recursivo</div></div>
+      </div>
+    </div>
+    <div class="arrow" style="color:#BFDBFE"><div class="arrow-line"></div><div class="arrow-tip">▶</div></div>
+    <div class="col">
+      <div class="box" style="border-color:#BFDBFE">
+        <div class="box-title" style="background:#BFDBFE">Proposer</div>
+        <div class="box-body"><div>arma el bloque</div><div>1 aggregate/msg</div><div>firma con proposal_key</div></div>
+      </div>
+    </div>
+    <div class="arrow" style="color:#BFDBFE"><div class="arrow-line"></div><div class="arrow-tip">▶</div></div>
+    <div class="col">
+      <div class="box" style="border-color:#BFDBFE">
+        <div class="box-title" style="background:#BFDBFE">Verifier</div>
+        <div class="box-body"><div>toda la red</div><div>O(1) independiente de N</div><div>rechaza duplicados</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="gossip-row">
+    <span style="color:#64748B; font-size:10px">gossipsub topics:</span>
+    <span class="tag">attestation_{subnet_id}</span>
+    <span style="color:#64748B">→</span>
+    <span class="tag">aggregated_attestation</span>
+    <span style="color:#64748B">→</span>
+    <span class="tag">block</span>
+  </div>
+</div>
+
+<!-- 7 Abiertos -->
+<div class="section" style="border:1px dashed #EF444433; background:#EF444408">
+  <div class="section-label" style="color:#EF4444">⑦ Problemas Abiertos</div>
+  <div class="row">
+    <div class="box" style="border-color:#EF4444; max-width:190px">
+      <div class="box-title" style="background:#EF4444">Adaptive K. Soundness</div>
+      <div class="box-body"><div>Plonky3/stwo no lo prueban</div><div>formalmente aún</div><div>gap más crítico</div></div>
+    </div>
+    <div class="box" style="border-color:#F59E0B; max-width:190px">
+      <div class="box-title" style="background:#F59E0B">Multi-tree XMSS</div>
+      <div class="box-body"><div>L = 2³² (~544 años)</div><div>sliding window</div><div>benchmarks pendientes</div></div>
+    </div>
+    <div class="box" style="border-color:#A78BFA; max-width:190px">
+      <div class="box-title" style="background:#A78BFA">STIR / WHIR</div>
+      <div class="box-body"><div>FRI → 2–3 MB</div><div>STIR/WHIR → &lt;1 MB</div><div>no implementado aún</div></div>
+    </div>
+    <div class="box" style="border-color:#3B82F6; max-width:190px">
+      <div class="box-title" style="background:#3B82F6">pq-devnet-4 metrics</div>
+      <div class="box-body"><div>leanMetrics</div><div>hardware EIP-7870</div><div>10K firmas/s teórico</div></div>
+    </div>
+  </div>
+</div>
+
+<footer>Drake, Khovratovich, Kudinov, Wagner — IACR Communications in Cryptology Vol. 2 (2024)</footer>
+
+</body>
+</html>
