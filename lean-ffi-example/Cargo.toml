@@ -1,0 +1,15 @@
+[package]
+name    = "lean-ffi-example"
+version = "0.1.0"
+edition = "2021"
+
+[build-dependencies]
+# Compila el .c generado por Lean como librería estática
+cc = "1.0"
+
+[dependencies]
+# sin dependencias externas — es un ejemplo mínimo
+
+[[bin]]
+name = "lean-ffi-example"
+path = "src/main.rs"
