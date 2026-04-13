@@ -128,10 +128,42 @@ usar `\bsorry\b`.
 
 ## Comparación con nuestro trabajo
 
+> ### ⚠️ Diferencia clave: `UInt64` vs `Nat`
+>
+> **Lambda usa `UInt64`** — tipo acotado, 64 bits, puede hacer overflow.
+> **Nosotros usamos `Nat`** — natural matemático, sin límite, sin overflow posible.
+>
+> ```lean
+> -- Lambda (UInt64 — acotado)
+> def justifiable (delta : UInt64) : Bool :=
+>   let val := 4 * delta + 1   -- ⚠️ overflow si delta ≥ 2^62
+>   isqrt val ^ 2 == val && val % 2 == 1
+>
+> -- Nosotros (Nat — sin límite)
+> def isPronicBool (n : Nat) : Bool :=
+>   let val := 4 * n + 1       -- ✅ nunca hace overflow
+>   Nat.sqrt val ^ 2 == val && val % 2 == 1
+> ```
+>
+> La consecuencia directa: el teorema de Lambda tiene que acotar su dominio de validez
+> a `d < 2^62`. El nuestro vale para **todos los naturales**, sin excepción.
+>
+> ```lean
+> -- Lambda — restricción explícita en el teorema
+> theorem justifiable_equiv (d : UInt64) (hd : d.toNat < 2^62) : ...
+>
+> -- Nuestro — sin restricción, vale para todo Nat
+> theorem slotIsJustifiableAfter_spec (slot finalizedSlot : Nat) : ...
+> ```
+>
+> La desventaja de `Nat` es que no compila directo a FFI — para exportar a C hay que
+> convertir a `UInt64` en la capa FFI. Lambda evita esa conversión pero paga el costo
+> de la restricción `d < 2^62` en sus pruebas.
+
 | Aspecto | PR #269 (equipo lambda) | Nuestro trabajo |
 |---|---|---|
 | Función formalizada | `slot_is_justifiable_after` | `slot_is_justifiable_after` + `is_valid_vote` |
-| Tipos en Lean | `UInt64` | `Nat` (sin límite) |
+| **Tipos en Lean** | **`UInt64` (acotado, overflow posible)** | **`Nat` (sin límite, sin overflow)** |
 | Mathlib | Separado en EthLambdaProofs | Directo en el mismo archivo |
 | FFI | Sí, con feature flag | Sí, en `lean-ffi-example/` |
 | Overflow u64 | Problema identificado en revisión | Evitado usando `Nat` |
