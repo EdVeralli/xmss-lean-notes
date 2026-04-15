@@ -1,7 +1,7 @@
 # Revisión Técnica — Artículo SAEI / 55 JAIIO
 
 Análisis de errores técnicos, imprecisiones científicas y claims sin respaldo.
-*(Los errores de forma están en `revision_articulo_jaiio.md`)*
+*(Los errores de forma están en `revision_forma_jaiio.md`)*
 
 ---
 

@@ -1,6 +1,6 @@
-# Revisión — Artículo SAEI / 55 JAIIO
+# Revisión de Forma — Artículo SAEI / 55 JAIIO
 
-Análisis de inconsistencias, errores y puntos difusos detectados en:
+Análisis de inconsistencias, errores de forma y puntos difusos detectados en:
 - `articulo_saei_55jaiio_v3.pdf` (versión larga, 10 páginas)
 - `articulo_saei_55jaiio_short.pdf` (versión corta, 5 páginas)
 
