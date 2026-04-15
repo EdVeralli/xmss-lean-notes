@@ -109,6 +109,24 @@ No se dice nada sobre los 4 restantes. ¿Son menores? ¿Afectan la validez de lo
 
 ---
 
+### 10. Registro narrativo inconsistente — primera persona vs impersonal
+
+El paper alterna entre registro impersonal y primera persona plural sin criterio uniforme:
+
+| Ubicación | Registro | Ejemplo |
+|---|---|---|
+| Abstract EN (v3 y short) | Primera persona | *"We describe the methodology..."* |
+| Abstract ES (v3 y short) | Impersonal | *"Se describen los fundamentos..."* |
+| Body secciones 1-5 | Impersonal | *"Se modelan...", "La experiencia se desarrolla...", "Se implementan..."* |
+| Discusión (v3) | Primera persona posesiva | *"Nuestra suite ofrece..."* |
+| Conclusiones (v3) | Impersonal | *"Este artículo presentó la metodología..."* |
+
+El body mantiene un tono impersonal coherente durante casi todo el paper, pero los abstracts en inglés usan "We" y la Discusión se desliza hacia "Nuestra suite". En español académico ambos registros son aceptables, pero hay que elegir uno y mantenerlo. La mezcla da impresión de falta de revisión final.
+
+**Corrección sugerida:** unificar todo el paper a un mismo registro. Lo más natural para el tono del paper sería impersonal en español ("Se describe...", "La suite ofrece...") y primera persona plural en el abstract en inglés ("We describe..."), que es la convención más común en papers bilingües. Pero lo importante es la consistencia interna: si la Discusión dice "Nuestra suite", entonces las Conclusiones no deberían decir "Este artículo presentó" como si fuera otro autor.
+
+---
+
 ## 🟢 Problemas de baja severidad (8, 9)
 
 ### 8. Nota de IA — diferencia menor entre versiones
@@ -141,6 +159,7 @@ PhET Interactive Simulations (Universidad de Colorado) es mayoritariamente open 
 | 7 | Replicabilidad afirmada sin evidencia | 🔴 Alta | Ambas |
 | 8 | Nota de IA distinta | 🟢 Baja | Ambas |
 | 9 | PhET sin justificación | 🟢 Baja | Ambas |
+| 10 | Registro narrativo inconsistente (1ra persona vs impersonal) | 🟡 Media | Ambas (peor en v3) |
 
 ### Nota sobre la calibración
 
@@ -153,6 +172,7 @@ Este paper es una contribución académica seria — con marco teórico, revisio
 
 **Correcciones recomendables:**
 - Errores 2, 4, 5, 6: inconsistencias entre versiones que un revisor atento va a notar. Todas son fáciles de resolver unificando ambos documentos.
+- Error 10: el registro narrativo mezclado (impersonal en el body, "We" en el abstract EN, "Nuestra suite" en Discusión) da impresión de falta de revisión final. Se resuelve con una pasada de unificación.
 
 **Menores:**
 - Errores 8, 9: no van a determinar la aceptación o rechazo, pero limpiarlos mejora la presentación.
