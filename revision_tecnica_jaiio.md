@@ -160,3 +160,111 @@ Si dos grupos reciben accidentalmente la misma semilla, la ventaja pedagógica d
 | 9 | Seeds | Software | 🟡 Media | PRNG no especificado |
 
 **Prioridad antes de submitear:** los errores 3 y 5 son los más graves académicamente porque afectan la validez del análisis estadístico que los estudiantes aprenden. Los errores 1 y 2 afectan la corrección matemática de los simuladores. Las citas (4) son las más fáciles de corregir.
+
+---
+
+## 🔄 Re-validación independiente (segunda opinión — modelo Opus)
+
+Se realizó una segunda revisión independiente de los 9 errores listados arriba, con el objetivo de calibrar su severidad real en el contexto de un paper de herramienta educativa para JAIIO.
+
+### Veredicto global
+
+> **El revisor anterior fue excesivamente riguroso.** El trabajo merece una evaluación positiva con recomendaciones de mejora editorial, no una crítica técnica severa. Solo 1 de los 9 errores originales es un error real no contextualizable. Los demás son o bien incorrectos, o bien observaciones válidas pero sobredimensionadas para el tipo y alcance del paper.
+
+---
+
+### Error 1 — pH en punto de equivalencia (🔴 → ✅ NO es error)
+
+**Veredicto re-validación: INCORRECTO. No es un error.**
+
+La descripción "se calcula el pH por hidrólisis" es la terminología estándar en libros de química analítica de nivel universitario (Chang, Skoog). El nivel de detalle del paper (tool educativa, no paper de química) no requiere especificar qué constante se usa. Exigir que el paper documente la distinción Ka/Kb/Kw es aplicar criterios de un paper de química pura a un trabajo de ingeniería de software educativo.
+
+---
+
+### Error 2 — VLE / Ley de Raoult sin azeótropos (🔴 → 🟡 SOBREDIMENSIONADO)
+
+**Veredicto re-validación: PARCIALMENTE VÁLIDO pero sobredimensionado.**
+
+La observación técnica sobre los azeótropos es correcta en abstracto, pero el paper declara explícitamente que modela mezclas **ideales**. Si el simulador permite seleccionar etanol-agua y lo modela con Raoult puro, eso sería un error de implementación — no necesariamente del paper. La recomendación adecuada es pedir una aclaración en una nota o footnote sobre qué mezclas están disponibles, no marcarlo como error de alta severidad.
+
+---
+
+### Error 3 — R² y heteroscedasticidad (🔴 → 🟡 SOBREDIMENSIONADO)
+
+**Veredicto re-validación: PARCIALMENTE VÁLIDO pero sobredimensionado.**
+
+La observación estadística sobre WLS es técnicamente correcta. Sin embargo, el uso de R² en cursos de cinética química está completamente estandarizado en libros universitarios de nivel intro. Ningún curso de química general usa WLS — se usa OLS y R² para elegir el orden de reacción. Pedir WLS en un paper de herramienta educativa de nivel introductorio aplica estándares de un paper de estadística aplicada. La recomendación correcta sería una nota aclaratoria, no marcarlo como error grave.
+
+---
+
+### Error 4 — Citas sin DOI (🔴 → 🟡 SOBREDIMENSIONADO)
+
+**Veredicto re-validación: PARCIALMENTE VÁLIDO.**
+
+La observación sobre las citas incompletas es válida como recomendación editorial. Sin embargo, "no verificables" es excesivo: están citados con autor, año y congreso. La métrica "35% más rápido" y "11,75 puntos más" son datos de los papers citados, no del paper en revisión — si los autores confían en esos datos, es su responsabilidad verificarlos. La recomendación es agregar DOIs, no desacreditar los claims.
+
+---
+
+### Error 5 — Ruido aditivo vs multiplicativo (🔴 → 🟡 SOBREDIMENSIONADO)
+
+**Veredicto re-validación: PARCIALMENTE VÁLIDO pero sobredimensionado.**
+
+La distinción es técnicamente correcta. Sin embargo, en el contexto de una herramienta educativa para que los estudiantes practiquen regresión lineal, la diferencia entre ruido aditivo y multiplicativo al 1-5% no tiene consecuencias pedagógicas apreciables en los rangos típicos de [A] > 10% de la concentración inicial. Es una recomendación válida de claridad técnica, no un error que invalida la herramienta.
+
+---
+
+### Error 6 — Notación θ en Langmuir vs Freundlich (🟡 → 🔴 CONFIRMADO)
+
+**Veredicto re-validación: CONFIRMADO. Este es un error real.**
+
+Usar θ (fracción de cobertura, acotada entre 0 y 1) para representar la isoterma de Freundlich (q = kP^(1/n), no acotada) es una inconsistencia conceptual genuina en la nomenclatura estándar de adsorción. Puede generar confusión real en estudiantes que luego lean bibliografía de adsorción. La linearización "1/θ vs 1/P" también es incorrecta para Freundlich con esa notación. **Corrección recomendada:** usar `q` (cantidad adsorbida en mol/g o mg/g) para Freundlich, reservar θ solo para Langmuir.
+
+---
+
+### Error 7 — Balance energético calorímetro (🟡 → 🟢 SOBREDIMENSIONADO)
+
+**Veredicto re-validación: PARCIALMENTE VÁLIDO pero sobredimensionado.**
+
+No escribir la ecuación completa Q = (m·c + C_cal)·ΔT en el paper es una simplificación editorial típica en papers de herramientas educativas. Si el simulador la implementa correctamente (lo cual no se puede determinar desde el paper), no hay error. La recomendación es agregar la ecuación completa en el paper para claridad, no marcarlo como error.
+
+---
+
+### Error 8 — Regla de IA sin verificación (🟡 → 🟢 SOBREDIMENSIONADO)
+
+**Veredicto re-validación: OBSERVACIÓN VÁLIDA, severidad sobredimensionada.**
+
+La observación es válida como reflexión pedagógica — un paper de educación en CS podría discutir los mecanismos de enforcement. Sin embargo, la mayoría de los papers de prácticas docentes no detallan los mecanismos de verificación de reglas de aula. Es una sugerencia de mejora, no un error técnico.
+
+---
+
+### Error 9 — PRNG no especificado (🟡 → ✅ NO es error)
+
+**Veredicto re-validación: INCORRECTO. No es un error significativo.**
+
+No especificar si el PRNG es MT19937 o PCG es una observación de nivel de implementación irrelevante para un paper de herramienta educativa. La unicidad de semillas por grupo es una preocupación operativa, no técnica. Ningún paper de este tipo especifica el algoritmo PRNG. Esta observación no pertenece a una revisión académica de este nivel.
+
+---
+
+### Tabla re-validada
+
+| # | Error original | Severidad original | Severidad re-validada | Estado |
+|---|---|---|---|---|
+| 1 | pH punto de equivalencia | 🔴 Alta | ✅ Sin severidad | No es error |
+| 2 | VLE / Raoult sin azeótropos | 🔴 Alta | 🟡 Baja | Sobredimensionado |
+| 3 | R² y heteroscedasticidad | 🔴 Alta | 🟡 Baja | Sobredimensionado |
+| 4 | Citas sin DOI | 🔴 Alta | 🟡 Baja | Editorial, no técnico |
+| 5 | Ruido aditivo vs multiplicativo | 🔴 Alta | 🟡 Baja | Sobredimensionado |
+| **6** | **θ en Langmuir vs Freundlich** | **🟡 Media** | **🔴 Real** | **CONFIRMADO** |
+| 7 | Balance calorímetro | 🟡 Media | 🟢 Muy baja | Simplificación editorial |
+| 8 | Regla IA sin verificación | 🟡 Media | 🟢 Muy baja | Sugerencia, no error |
+| 9 | PRNG no especificado | 🟡 Media | ✅ Sin severidad | No aplica al nivel del paper |
+
+### Recomendación final
+
+El paper tiene **un único error técnico real** (notación θ en Freundlich) y varias oportunidades de mejora editorial menores. El análisis anterior sobreestimó la severidad al aplicar estándares de papers de química pura o estadística aplicada a un trabajo de ingeniería de software educativo presentado en JAIIO/SAEI.
+
+**Recomendación para los autores antes de submitear:**
+1. Corregir la notación θ → q en la isoterma de Freundlich (error real, fácil de corregir)
+2. Agregar DOIs a las citas de Shihab y Bazie (mejora editorial)
+3. Aclarar qué mezclas binarias están disponibles en el simulador VLE (nota al pie)
+4. Especificar el modelo de ruido (aditivo o multiplicativo) en sección 4.4
