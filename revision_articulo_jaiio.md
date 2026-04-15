@@ -6,7 +6,7 @@ Análisis de inconsistencias, errores y puntos difusos detectados en:
 
 ---
 
-## 🔴 Problemas de alta severidad
+## 🔴 Problemas de alta severidad (1, 3, 7)
 
 ### 1. Estado del proyecto — contradictorio entre versiones
 
@@ -21,19 +21,6 @@ Las dos versiones describen el estado del proyecto de forma incompatible:
 Un revisor que lea el abstract de v3 va a asumir que el proyecto ya terminó. El body contradice eso. La versión short es más honesta pero inconsistente con v3.
 
 **Corrección sugerida:** unificar en ambos abstracts con *"an integrator project currently under development during the first semester of 2026"*.
-
----
-
-### 2. Tabla de comparación — DWSIM / código abierto
-
-| Versión | Columna | Código abierto |
-|---|---|---|
-| v3 | "Aspen/DWSIM" | Parcial |
-| short | "DWSIM" | Sí |
-
-Aspen Plus es software comercial. DWSIM es genuinamente open source (licencia MIT/GPL). Agruparlos en v3 y marcarlos como "Parcial" es impreciso. La short los separó pero sin explicar el cambio.
-
-**Corrección sugerida:** usar solo DWSIM (open source = Sí) y eliminar Aspen de la tabla, o listarlos por separado con sus propias columnas.
 
 ---
 
@@ -58,7 +45,32 @@ La short agrega dos items que no están en v3 y omite "formalizar el vínculo in
 
 ---
 
-## 🟡 Problemas de severidad media
+### 7. Claim de replicabilidad sin evidencia 🔴
+
+> *"El modelo es replicable: cualquier cátedra de programación puede establecer un vínculo análogo"*
+
+Esta afirmación aparece en ambas versiones, pero el proyecto todavía no terminó. En un paper académico serio con marco teórico y revisiones sistemáticas, afirmar replicabilidad de algo en curso y sin validación externa es un claim que no se sostiene. Un revisor de SAEI lo va a cuestionar — es exactamente el tipo de afirmación que distingue un paper maduro de uno prematuro.
+
+**Corrección sugerida:** condicionar la afirmación: *"El modelo tiene potencial de replicabilidad: la estructura de tres ejes (cliente real, software libre, IA supervisada) es transferible a otras cátedras de programación, aunque su efectividad deberá ser validada en contextos distintos."*
+
+---
+
+## 🟡 Problemas de severidad media (2, 4, 5, 6)
+
+### 2. Tabla de comparación — DWSIM / código abierto
+
+*(movido de alta a media — es inconsistencia de presentación, no error de contenido)*
+
+| Versión | Columna | Código abierto |
+|---|---|---|
+| v3 | "Aspen/DWSIM" | Parcial |
+| short | "DWSIM" | Sí |
+
+Aspen Plus es software comercial. DWSIM es genuinamente open source (licencia MIT/GPL). Agruparlos en v3 y marcarlos como "Parcial" es impreciso. La short los separó pero sin explicar el cambio. Es una inconsistencia de presentación entre versiones, no un error de contenido.
+
+**Corrección sugerida:** usar solo DWSIM (open source = Sí) y eliminar Aspen de la tabla, o listarlos por separado con sus propias columnas.
+
+---
 
 ### 4. Diagrama de arquitectura — módulos inconsistentes
 
@@ -97,17 +109,7 @@ No se dice nada sobre los 4 restantes. ¿Son menores? ¿Afectan la validez de lo
 
 ---
 
-### 7. Claim de replicabilidad sin evidencia
-
-> *"El modelo es replicable: cualquier cátedra de programación puede establecer un vínculo análogo"*
-
-Esta afirmación aparece en ambas versiones, pero el proyecto todavía no terminó. Afirmar replicabilidad de algo en curso es prematuro y un revisor lo puede cuestionar duramente. No hay ninguna otra institución que lo haya replicado.
-
-**Corrección sugerida:** condicionar la afirmación: *"El modelo tiene potencial de replicabilidad: la estructura de tres ejes (cliente real, software libre, IA supervisada) es transferible a otras cátedras de programación, aunque su efectividad deberá ser validada en contextos distintos."*
-
----
-
-## 🟢 Problemas de baja severidad
+## 🟢 Problemas de baja severidad (8, 9)
 
 ### 8. Nota de IA — diferencia menor entre versiones
 
@@ -131,13 +133,26 @@ PhET Interactive Simulations (Universidad de Colorado) es mayoritariamente open 
 | # | Problema | Severidad | Versiones afectadas |
 |---|---|---|---|
 | 1 | Estado del proyecto contradictorio | 🔴 Alta | Ambas |
-| 2 | DWSIM/Aspen en tabla inconsistente | 🔴 Alta | Ambas |
+| 2 | DWSIM/Aspen en tabla inconsistente | 🟡 Media | Ambas |
 | 3 | Trabajo futuro con items distintos | 🔴 Alta | Ambas |
 | 4 | Diagrama de arquitectura distinto | 🟡 Media | Ambas |
 | 5 | Observaciones sin metodología | 🟡 Media | Short |
 | 6 | 4 issues no resueltos sin explicar | 🟡 Media | Ambas |
-| 7 | Replicabilidad afirmada sin evidencia | 🟡 Media | Ambas |
+| 7 | Replicabilidad afirmada sin evidencia | 🔴 Alta | Ambas |
 | 8 | Nota de IA distinta | 🟢 Baja | Ambas |
 | 9 | PhET sin justificación | 🟢 Baja | Ambas |
 
-**Prioridad de corrección antes de submitear:** problemas 1, 2 y 3 son los más visibles para un revisor y los más fáciles de corregir. Los problemas 5 y 7 son los más delicados académicamente.
+### Nota sobre la calibración
+
+Este paper es una contribución académica seria — con marco teórico, revisiones sistemáticas y metodología formal — no un borrador informal ni un poster. Los errores de forma se evalúan con esa barra.
+
+**Correcciones imprescindibles antes de submitear:**
+- **Error 1** (abstract contradictorio): es lo primero que lee un revisor y la contradicción es inmediata.
+- **Error 3** (trabajo futuro distinto): dos versiones del mismo paper con items de futuro distintos es inaceptable.
+- **Error 7** (replicabilidad sin evidencia): afirmar que un modelo es replicable cuando aún no terminó y nadie más lo ha probado es un claim que un revisor de SAEI va a cuestionar. En un paper serio esto necesita condicionarse.
+
+**Correcciones recomendables:**
+- Errores 2, 4, 5, 6: inconsistencias entre versiones que un revisor atento va a notar. Todas son fáciles de resolver unificando ambos documentos.
+
+**Menores:**
+- Errores 8, 9: no van a determinar la aceptación o rechazo, pero limpiarlos mejora la presentación.

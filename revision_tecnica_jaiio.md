@@ -169,7 +169,7 @@ Se realizó una segunda revisión independiente de los 9 errores listados arriba
 
 ### Veredicto global
 
-> **El revisor anterior fue excesivamente riguroso.** El trabajo merece una evaluación positiva con recomendaciones de mejora editorial, no una crítica técnica severa. Solo 1 de los 9 errores originales es un error real no contextualizable. Los demás son o bien incorrectos, o bien observaciones válidas pero sobredimensionadas para el tipo y alcance del paper.
+> **El revisor anterior fue demasiado severo, pero la segunda opinión fue demasiado indulgente.** Este paper no es "solo una herramienta educativa" — es una contribución académica seria con marco teórico, revisiones sistemáticas y metodología formal, presentada en JAIIO/SAEI ante pares que incluyen docentes de química. Eso exige una barra técnica más alta que la de un poster informal. La calibración correcta está en el medio: 1 error técnico real grave, 2 observaciones técnicas que merecen corrección (severidad media), y el resto son recomendaciones editoriales menores o no-errores.
 
 ---
 
@@ -181,11 +181,11 @@ La descripción "se calcula el pH por hidrólisis" es la terminología estándar
 
 ---
 
-### Error 2 — VLE / Ley de Raoult sin azeótropos (🔴 → 🟡 SOBREDIMENSIONADO)
+### Error 2 — VLE / Ley de Raoult sin azeótropos (🔴 → 🟡 MEDIA)
 
-**Veredicto re-validación: PARCIALMENTE VÁLIDO pero sobredimensionado.**
+**Veredicto re-validación: PARCIALMENTE VÁLIDO. Severidad media.**
 
-La observación técnica sobre los azeótropos es correcta en abstracto, pero el paper declara explícitamente que modela mezclas **ideales**. Si el simulador permite seleccionar etanol-agua y lo modela con Raoult puro, eso sería un error de implementación — no necesariamente del paper. La recomendación adecuada es pedir una aclaración en una nota o footnote sobre qué mezclas están disponibles, no marcarlo como error de alta severidad.
+La observación técnica sobre los azeótropos es correcta en abstracto, y el paper declara explícitamente que modela mezclas **ideales**. Sin embargo, al ser un paper académico serio con docentes de química como coautores/clientes, la omisión de qué mezclas están disponibles es relevante: si un revisor de química lee que el simulador usa Raoult y "permite seleccionar distintas mezclas" sin más aclaración, va a preguntar legítimamente si incluye sistemas no-ideales. Una nota al pie aclarando qué mezclas están implementadas resuelve el problema.
 
 ---
 
@@ -205,11 +205,11 @@ La observación sobre las citas incompletas es válida como recomendación edito
 
 ---
 
-### Error 5 — Ruido aditivo vs multiplicativo (🔴 → 🟡 SOBREDIMENSIONADO)
+### Error 5 — Ruido aditivo vs multiplicativo (🔴 → 🟡 MEDIA)
 
-**Veredicto re-validación: PARCIALMENTE VÁLIDO pero sobredimensionado.**
+**Veredicto re-validación: PARCIALMENTE VÁLIDO. Severidad media.**
 
-La distinción es técnicamente correcta. Sin embargo, en el contexto de una herramienta educativa para que los estudiantes practiquen regresión lineal, la diferencia entre ruido aditivo y multiplicativo al 1-5% no tiene consecuencias pedagógicas apreciables en los rangos típicos de [A] > 10% de la concentración inicial. Es una recomendación válida de claridad técnica, no un error que invalida la herramienta.
+La distinción es técnicamente correcta, y en un paper académico serio que describe la arquitectura de simuladores de laboratorio, el modelo de ruido es una decisión de diseño que merece estar documentada. No es un error que invalide la herramienta, pero sí una omisión técnica que un revisor con background estadístico va a notar, especialmente porque el paper dedica una sección entera (4.4) a describir cómo se genera el ruido y cómo los estudiantes deben analizarlo. Si el paper describe la funcionalidad con ese nivel de detalle, debería especificar si el ruido es aditivo o multiplicativo.
 
 ---
 
@@ -247,24 +247,30 @@ No especificar si el PRNG es MT19937 o PCG es una observación de nivel de imple
 
 ### Tabla re-validada
 
-| # | Error original | Severidad original | Severidad re-validada | Estado |
+| # | Error original | Severidad original | Severidad final | Estado |
 |---|---|---|---|---|
 | 1 | pH punto de equivalencia | 🔴 Alta | ✅ Sin severidad | No es error |
-| 2 | VLE / Raoult sin azeótropos | 🔴 Alta | 🟡 Baja | Sobredimensionado |
-| 3 | R² y heteroscedasticidad | 🔴 Alta | 🟡 Baja | Sobredimensionado |
-| 4 | Citas sin DOI | 🔴 Alta | 🟡 Baja | Editorial, no técnico |
-| 5 | Ruido aditivo vs multiplicativo | 🔴 Alta | 🟡 Baja | Sobredimensionado |
-| **6** | **θ en Langmuir vs Freundlich** | **🟡 Media** | **🔴 Real** | **CONFIRMADO** |
-| 7 | Balance calorímetro | 🟡 Media | 🟢 Muy baja | Simplificación editorial |
-| 8 | Regla IA sin verificación | 🟡 Media | 🟢 Muy baja | Sugerencia, no error |
+| 2 | VLE / Raoult sin azeótropos | 🔴 Alta | 🟡 Media | Omisión técnica legítima |
+| 3 | R² y heteroscedasticidad | 🔴 Alta | 🟢 Baja | Sobredimensionado (estándar pedagógico) |
+| 4 | Citas sin DOI | 🔴 Alta | 🟢 Baja | Editorial, no técnico |
+| 5 | Ruido aditivo vs multiplicativo | 🔴 Alta | 🟡 Media | Omisión técnica legítima |
+| **6** | **θ en Langmuir vs Freundlich** | **🟡 Media** | **🔴 Alta** | **ERROR REAL CONFIRMADO** |
+| 7 | Balance calorímetro | 🟡 Media | 🟢 Baja | Simplificación editorial |
+| 8 | Regla IA sin verificación | 🟡 Media | 🟢 Baja | Sugerencia, no error |
 | 9 | PRNG no especificado | 🟡 Media | ✅ Sin severidad | No aplica al nivel del paper |
 
 ### Recomendación final
 
-El paper tiene **un único error técnico real** (notación θ en Freundlich) y varias oportunidades de mejora editorial menores. El análisis anterior sobreestimó la severidad al aplicar estándares de papers de química pura o estadística aplicada a un trabajo de ingeniería de software educativo presentado en JAIIO/SAEI.
+El paper es una contribución académica seria — no solo una herramienta educativa — y merece una revisión proporcionada a ese nivel. Tiene **1 error técnico real** (notación θ en Freundlich), **2 omisiones técnicas que merecen corrección** (mezclas VLE y modelo de ruido), y varias mejoras editoriales menores. En conjunto, es un paper sólido con defectos corregibles.
 
-**Recomendación para los autores antes de submitear:**
-1. Corregir la notación θ → q en la isoterma de Freundlich (error real, fácil de corregir)
-2. Agregar DOIs a las citas de Shihab y Bazie (mejora editorial)
-3. Aclarar qué mezclas binarias están disponibles en el simulador VLE (nota al pie)
-4. Especificar el modelo de ruido (aditivo o multiplicativo) en sección 4.4
+La primera revisión (9 errores, 5 de alta severidad) fue excesiva: aplicó estándares de papers de química pura a un trabajo de ingeniería de software. La segunda revisión (1 solo error) fue demasiado indulgente: minimizó omisiones legítimas bajo el argumento de "es solo educativo". La calibración correcta está entre ambas.
+
+**Correcciones imprescindibles antes de submitear:**
+1. 🔴 Corregir la notación θ → q en la isoterma de Freundlich (error conceptual genuino)
+2. 🟡 Especificar el modelo de ruido (aditivo o multiplicativo) en sección 4.4
+3. 🟡 Aclarar qué mezclas binarias están disponibles en el simulador VLE (nota al pie)
+
+**Mejoras editoriales recomendables:**
+4. Agregar DOIs a las citas de Shihab y Bazie
+5. Incluir la ecuación completa del balance calorimétrico
+6. Describir brevemente cómo se verifica la regla de uso de IA
