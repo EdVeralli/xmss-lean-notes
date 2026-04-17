@@ -4,134 +4,157 @@ Presentación: `Clase de Testing _standalone_.html`
 Materia: TA045 — Taller de Programación, FIUBA
 Fecha declarada: Abril 2026
 
+*Revisión unificada a partir de dos análisis independientes (Opus).*
+
 ---
 
 ## Veredicto general
 
-La presentación es de muy buena calidad. El arco narrativo (fracaso real → cita de Dijkstra → técnicas de menor a mayor potencia → síntesis por costo de bug) está bien construido. Los ejemplos de código en Rust son correctos y relevantes para la materia. Los conceptos están bien explicados sin sobresimplificar. Encontré pocos errores técnicos propiamente dichos y varias oportunidades de mejora.
+La presentación es sólida en estructura y narrativa. El arco desde un caso histórico motivador (Ariane 5), pasando por la cita de Dijkstra, técnicas incrementalmente más potentes, hasta la reflexión sobre cuándo parar, es pedagógicamente efectivo. Los ejemplos de código Rust son relevantes para la materia y están bien elegidos. Los errores técnicos propiamente dichos son pocos y concentrados; las oportunidades de mejora son varias y elevarían significativamente el valor de la clase.
 
 ---
 
-## Errores técnicos
+## 🔴 Errores de alta severidad
 
-### T1. Ariane 5 — la conversión no fue de f64 a i16 — 🔴 Alta
+### T1. Ariane 5 — el pseudocódigo no reproduce el bug real
 
 > "una conversión de un número de punto flotante de 64 bits a un entero con signo de 16 bits"
 
-Esto es impreciso. Según el informe oficial de la comisión Ariane 501 (informe Lions, 1996), la conversión fue de un **float de 64 bits a un entero con signo de 16 bits**, pero el dato original era la **velocidad horizontal relativa (BH)** expresada como float de 64 bits en el SRI (Sistema de Referencia Inercial). El valor era ~32768, que excedía el rango de un int16 con signo (máx 32767).
+La descripción general es correcta, pero el pseudocódigo Rust es engañoso en dos aspectos:
 
-El pseudocódigo del slide dice:
+**Problema 1: semántica de `as i16` en Rust.**
+El código muestra `let hv_int: i16 = horizontal_velocity as i16;`. En Rust moderno (≥1.45), `f64 as i16` hace **saturación**: valores fuera de rango se clampean a `i16::MAX` (32767) o `i16::MIN` (-32768). No paniquea, no lanza excepción, no produce overflow — simplemente devuelve un valor incorrecto y sigue ejecutando silenciosamente. Antes de Rust 1.45, era **undefined behavior**.
 
+Pero en el Ariane 5 real, el código era **Ada**, y Ada lanza una excepción `CONSTRAINT_ERROR` en la conversión fuera de rango. Esa excepción no fue manejada, lo que apagó el Sistema de Referencia Inercial (SRI) y dejó al cohete sin guía. El bug fue una **excepción no manejada**, no un overflow silencioso ni un truncamiento.
+
+**Problema 2: los valores numéricos son ambiguos.**
+El comentario dice `max ~3.2×10³` para Ariane 4 y `max ~3.2×10⁴` para Ariane 5. Pero `3.2×10⁴ = 32000` cabe en un i16 (máximo 32767). El valor real de la velocidad horizontal (BH) que causó el overflow fue ~32768 (exactamente 2¹⁵), justo excediendo el límite. Sería más preciso decir `>32767` o `~2¹⁵`.
+
+**Corrección sugerida:** Para representar fielmente el crash en Rust:
+```rust
+let hv_int = i16::try_from(horizontal_velocity as i64)
+    .expect("overflow — SRI apagado");
 ```
-let horizontal_velocity: f64 = sensor.read();
-let hv_int: i16 = horizontal_velocity as i16;
-```
-
-El `as i16` en Rust hace truncación silenciosa (wrapping), no lanza excepción. En Ada (el lenguaje real del Ariane), la conversión lanza una excepción `CONSTRAINT_ERROR` que no fue manejada — el SRI se apagó y el cohete perdió guía. El bug no fue un overflow silencioso sino una **excepción no manejada**. Si el público es de Rust, vale la pena aclarar que la semántica de `as` en Rust es diferente a Ada: en Rust el cast sería silencioso, en Ada crasheó el sistema.
-
-**El comentario del código también tiene un error numérico:** dice `max ~3.2×10³` para Ariane 4 y `max ~3.2×10⁴` para Ariane 5. El valor real que causó el overflow fue ~32768 (2¹⁵), que está en el borde exacto del i16. El ~3.2×10⁴ es correcto pero sería más preciso decir 32768 o 2¹⁵, ya que el punto es que superó exactamente el máximo del tipo.
+Esto sí paniquea, análogamente a la excepción Ada. Y agregar una nota aclarando que el lenguaje real era Ada y que la semántica de `as` en Rust es diferente — lo que convierte el ejemplo en una lección adicional sobre cómo el mismo bug se manifiesta distinto según el lenguaje.
 
 ---
 
-### T2. Cobertura de ramas — el ejemplo no tiene 100% de ramas — 🟡 Media
+## 🟡 Errores / omisiones de severidad media
 
-> "100.0% branches"
+### T2. Cobertura + mutation testing — oportunidad perdida
 
-El slide dice que `es_mayor(10)` y `es_mayor(25)` dan 100% de cobertura de ramas. Esto es correcto para la función `es_mayor` que tiene una sola condición (`edad >= 18`) con dos outcomes (true/false), y los dos tests ejercitan ambos. La afirmación es técnicamente correcta.
+El slide de cobertura demuestra brillantemente que 100% de branch coverage no detecta cambiar `>=` por `>`. Pero no responde la pregunta obvia del estudiante: "¿y entonces qué técnica lo detectaría?" La respuesta es **mutation testing** — mutar el código (`>=` → `>`, `+` → `-`, etc.) y ver si algún test falla. Herramientas como `cargo-mutants` en Rust son accesibles y directamente relevantes.
 
-Sin embargo, el slide inmediatamente argumenta que esto es insuficiente porque el borde `edad == 18` no se prueba. Esto es un excelente punto pedagógico, pero podría generar confusión: si la cobertura de ramas es 100% y aún así falta algo, ¿qué nivel de cobertura lo detectaría? La respuesta es **mutation testing** (cambiar `>=` por `>` y ver si algún test falla), que no se menciona en la presentación. Sería una buena oportunidad de introducir el concepto, ya que el ejemplo lo pide a gritos.
-
----
-
-### T3. Dijkstra — cita correcta pero fecha imprecisa — 🟢 Baja
-
-> "Edsger W. Dijkstra · EWD249, 1970"
-> "Notes on Structured Programming"
-
-EWD249 es efectivamente "Notes on Structured Programming" y la cita es correcta. Sin embargo, la versión publicada y más citada es de 1972 (en el libro "Structured Programming" de Dahl, Dijkstra y Hoare, Academic Press). El manuscrito EWD249 circuló desde ~1969-1970. Ambas fechas son defensibles; solo mencionarlo por si un estudiante busca la referencia y encuentra 1972.
+Esto sería un puente natural entre el slide de cobertura y el de property-based testing: la cobertura mide ejecución, mutation testing mide observación, y property-based testing automatiza la generación de inputs para atrapar mutantes.
 
 ---
 
-### T4. Property-based testing — propiedades de sort incompletas — 🟢 Baja
+### T3. `#[should_panic]` sin `expected` — mala práctica implícita
 
-> "Propiedades de una función de ordenar: el resultado está ordenado, es una permutación del input, sort(sort(v)) == sort(v) (idempotencia)"
-
-Las dos primeras propiedades son las esenciales y juntas constituyen una especificación completa de sort. La tercera (idempotencia) es consecuencia de las dos primeras — no agrega poder de verificación. No es un error, pero si el objetivo es mostrar propiedades *independientes* que juntas especifican el comportamiento, la idempotencia es redundante. Una propiedad más útil como tercera sería `sort(v).len() == v.len()` (preservación de longitud), que es independiente y detecta bugs donde sort pierde o duplica elementos.
+El slide IV lista `#[should_panic]` como atributo de test pero no menciona la variante `#[should_panic(expected = "mensaje")]`. Sin `expected`, el test pasa con **cualquier** pánico — incluyendo pánicos por razones completamente distintas a la esperada. Para una clase que enseña buenas prácticas, recomendar solo `#[should_panic]` sin `expected` es enseñar una práctica débil.
 
 ---
 
-### T5. Fuzzing — falta mención de sanitizers — 🟡 Media
+### T4. Fuzzing sin sanitizers
 
-La sección de fuzzing describe bien el concepto de fuzzing guiado por cobertura con libFuzzer y `cargo fuzz`, pero no menciona los **sanitizers** (AddressSanitizer, UndefinedBehaviorSanitizer) que son lo que realmente convierte al fuzzer en una herramienta potente. Sin sanitizers, el fuzzer solo detecta crashes y panics. Con ASAN detecta buffer overflows, use-after-free, memory leaks. Con UBSAN detecta undefined behavior.
+La sección de fuzzing describe bien el concepto de fuzzing guiado por cobertura, pero no menciona los **sanitizers** (AddressSanitizer, UndefinedBehaviorSanitizer, MemorySanitizer) que son lo que realmente potencia al fuzzer. Sin sanitizers, el fuzzer solo detecta crashes y panics visibles. Con ASAN detecta buffer overflows, use-after-free, memory leaks. `cargo fuzz` los activa por defecto — mencionarlo explica por qué el fuzzer encuentra bugs que los tests no.
 
-En Rust, los panics ya son bastante informativos, pero para código `unsafe` (que es común en parsers y protocolos), los sanitizers son esenciales. `cargo fuzz` los activa por defecto, así que técnicamente están ahí — pero no mencionarlos es perder la oportunidad de explicar *por qué* el fuzzer encuentra bugs que los tests no.
-
----
-
-### T6. Verificación formal — Lean 4 ejemplo trivial — 🟢 Baja
-
-```lean
-theorem add_comm (a b : Nat) :
-  a + b = b + a :=
-by induction a with
-| zero => simp
-| succ n ih => simp [Nat.succ_add, ih]
-```
-
-El código Lean es correcto y compila. La conmutatividad de la suma es un buen primer ejemplo. La presentación dice "Si el compilador acepta la demostración, el teorema es cierto. No hay que volver a revisarlo." — esto es correcto y es el punto central de la verificación formal.
-
-Una observación menor: en Lean 4 moderno, `Nat.add_comm` ya existe en la librería estándar y se puede usar directamente con `exact Nat.add_comm a b`. Pero para una presentación didáctica, mostrar la prueba por inducción es mejor.
+En Rust puro (sin `unsafe`) esto es menos crítico, pero para estudiantes que verán C/C++ en otras materias de FIUBA, es valioso que sepan que el fuzzer no trabaja solo.
 
 ---
 
-### T7. Tabla de síntesis — "vectores de prueba estándar" sin explicar — 🟢 Baja
+### T5. Tests de integración — ausencia como tema
 
-La tabla de §11 menciona "vectores NIST" y "vectores de prueba estándar" sin haber explicado qué son. Para un estudiante de Taller de Programación, esto puede ser opaco. Una línea aclaratoria ("inputs y outputs de referencia publicados por organismos de estandarización para verificar que una implementación criptográfica es correcta") ayudaría.
-
----
-
-### T8. Mocking — la tabla de dobles omite una distinción sutil — 🟢 Baja
-
-La tabla lista Stub, Mock, Fake y Spy. La clasificación sigue a Gerard Meszaros (xUnit Test Patterns, 2007) y es correcta. El término paraguas "dobles de prueba" (test doubles) también es de Meszaros. 
-
-La distinción entre Mock y Spy es la que más confunde en la práctica: el slide dice que Spy "envuelve lo real y registra interacciones", lo cual es correcto pero podría ser más claro diciendo que un Spy llama al método real y además registra, mientras que un Mock no llama al método real.
+Los tests de integración se mencionan tres veces de pasada ("un test con mocks no reemplaza a un test de integración", en la tabla de síntesis, y en el cierre) pero nunca se definen, nunca se muestra un ejemplo, y nunca se explica la distinción práctica en Rust (`tests/` directory vs `mod tests`). Para Taller de Programación donde los estudiantes arman proyectos con múltiples módulos, esta es la omisión más importante de la presentación.
 
 ---
 
-## Errores de forma
+### T6. Fuzz diferencial mencionado sin definir
 
-### F1. Fuzz diferencial mencionado pero no explicado — 🟡 Media
-
-La tabla de §11 dice "fuzz diferencial" para protocolos y criptografía. El concepto no se introdujo en ningún slide anterior. Fuzz diferencial (comparar el output de dos implementaciones independientes con los mismos inputs aleatorios) es una técnica potente y distinta del fuzzing estándar. Si se menciona en la síntesis, merece al menos una línea de definición.
+La tabla de síntesis recomienda "fuzz diferencial" para parsers y criptografía, pero el concepto no se introdujo en ningún slide. Fuzz diferencial = comparar el output de dos implementaciones independientes con los mismos inputs aleatorios, buscando divergencias. Una línea de definición resolvería el problema.
 
 ---
 
-### F2. Ausencia de tests de integración — 🟡 Media
+### T7. Ausencia de TDD como metodología
 
-La presentación va de tests de unidad a cobertura a mocking a property-based a fuzzing a verificación formal. Los **tests de integración** se mencionan tres veces de pasada ("un test con mocks no reemplaza a un test de integración", en la tabla de síntesis, y en el cierre) pero nunca se explican. Para una materia de Taller de Programación donde los estudiantes van a armar proyectos con múltiples módulos, la ausencia de una sección dedicada a tests de integración (y la distinción con tests de unidad) es una omisión significativa.
-
----
-
-### F3. La simulación interactiva — no verificable — 🟢 Info
-
-Los slides XI y XII mencionan figuras interactivas (simulación de proptest con `buggy_abs`, simulación del fuzzer buscando "FUZ"). Como el HTML es standalone con JavaScript embebido, no pude ejecutarlas para verificar que funcionan correctamente. Si las simulaciones tienen bugs, sería irónico en una presentación sobre testing.
+Para una materia de programación donde los estudiantes desarrollan proyectos, no mencionar Test-Driven Development (escribir el test antes del código) es una omisión notable. No requiere un capítulo entero — una mención en la síntesis de que los tests pueden guiar el diseño (no solo verificarlo) sería suficiente.
 
 ---
 
-## Resumen
+## 🟢 Observaciones de baja severidad
 
-| # | Tipo | Severidad | Problema |
-|---|---|---|---|
-| T1 | Técnico | 🔴 Alta | Ariane 5: fue excepción no manejada en Ada, no overflow silencioso |
-| T2 | Técnico | 🟡 Media | Oportunidad perdida de introducir mutation testing |
-| T3 | Técnico | 🟢 Baja | Dijkstra EWD249: 1970 vs 1972 |
-| T4 | Técnico | 🟢 Baja | Idempotencia de sort es redundante como propiedad |
-| T5 | Técnico | 🟡 Media | Fuzzing sin mencionar sanitizers (ASAN/UBSAN) |
-| T6 | Técnico | 🟢 Baja | Ejemplo Lean correcto, observación menor |
-| T7 | Técnico | 🟢 Baja | "Vectores NIST" sin explicar |
-| T8 | Técnico | 🟢 Baja | Mock vs Spy podría ser más claro |
-| F1 | Forma | 🟡 Media | Fuzz diferencial mencionado sin definir |
-| F2 | Forma | 🟡 Media | Tests de integración ausentes como tema |
-| F3 | Forma | 🟢 Info | Simulaciones interactivas no verificadas |
+### T8. Propiedades de sort — la idempotencia es redundante
 
-**Veredicto:** Presentación sólida y bien construida. El único error técnico que realmente importa es T1 (Ariane 5): el punto pedagógico es correcto (un bug de conversión de tipos destruyó un cohete) pero el mecanismo es impreciso — en Ada fue una excepción no manejada, no un overflow silencioso como sugiere el pseudocódigo Rust. El resto son oportunidades de mejora, no errores.
+Las propiedades listadas son: (1) resultado ordenado, (2) es permutación del input, (3) `sort(sort(v)) == sort(v)`. La propiedad (3) es consecuencia lógica de (1)+(2): si sort produce un resultado ordenado que es permutación del input, aplicar sort de nuevo no puede cambiar nada. No es incorrecta, pero es una oportunidad pedagógica perdida para hablar de **propiedades débiles vs fuertes**: (1) sola es débil (una función que devuelve `[1]` siempre la cumple), (2) sola es débil (la función identidad la cumple), pero (1)+(2) juntas son una especificación completa de sort.
+
+---
+
+### T9. Verificación formal — imprecisiones menores en la tabla
+
+| Sistema | Dice | Precisión |
+|---|---|---|
+| CompCert | "compilador de C que no miscompila" | Es un compilador verificado de un **subconjunto** de C (Clight), no de todo C |
+| seL4 | "microkernel libre de ciertos bugs" | Subestima el logro: seL4 tiene prueba de **correctitud funcional completa** (el binario implementa la especificación), integridad e information flow |
+| HACL* | "criptografía en Firefox y Linux" | Correcto, pero HACL* está escrito en F*, no en Lean/Coq — vale mencionar la diversidad de herramientas |
+
+---
+
+### T10. Dijkstra — fecha correcta pero potencialmente confusa
+
+EWD249 es "Notes on Structured Programming" y la cita es correcta. El manuscrito circuló desde ~1969-1970, pero la publicación más citada es de 1972 (libro "Structured Programming" de Dahl, Dijkstra, Hoare, Academic Press). Ambas fechas son defensibles; mencionarlo solo porque un estudiante que busque la referencia encontrará 1972.
+
+---
+
+### T11. Mocking — Mock vs Spy más claro
+
+La tabla define Spy como "envuelve lo real y registra interacciones". La distinción clave con Mock (según Meszaros) es que el Spy **llama al método real** y además registra, mientras que el Mock **no llama al método real** — solo simula. En `mockall` (la librería que usan en la materia) se generan mocks con `expect_*` y `.times()`, no spies.
+
+---
+
+### T12. "Vectores NIST" sin explicar
+
+La tabla de síntesis menciona "vectores NIST" y "vectores de prueba estándar" sin haberlos definido. Para estudiantes de Taller: "inputs y outputs de referencia publicados por organismos de estandarización para verificar que una implementación criptográfica es correcta."
+
+---
+
+### T13. Ejemplo Lean 4 — correcto
+
+El código Lean compila y es un buen ejemplo introductorio. `Nat.add_comm` ya existe en la librería estándar, pero para una presentación didáctica mostrar la prueba por inducción es la elección correcta. La frase "si el compilador acepta la demostración, el teorema es cierto" es el punto central de la verificación formal y está bien expresada.
+
+---
+
+## Tabla resumen
+
+| # | Severidad | Problema |
+|---|---|---|
+| T1 | 🔴 Alta | Ariane 5: `as i16` en Rust satura silenciosamente, no crashea como en Ada. Valores numéricos ambiguos. |
+| T2 | 🟡 Media | Mutation testing ausente — es la respuesta natural a la limitación de cobertura demostrada |
+| T3 | 🟡 Media | `#[should_panic]` sin `expected` es práctica débil |
+| T4 | 🟡 Media | Fuzzing sin mencionar sanitizers (ASAN/UBSAN) |
+| T5 | 🟡 Media | Tests de integración mencionados pero nunca definidos ni ejemplificados |
+| T6 | 🟡 Media | Fuzz diferencial mencionado en síntesis sin haberlo definido |
+| T7 | 🟡 Media | TDD no mencionado como metodología |
+| T8 | 🟢 Baja | Propiedades de sort: idempotencia redundante, oportunidad pedagógica |
+| T9 | 🟢 Baja | CompCert (subconjunto de C), seL4 (subestimado), HACL* (escrito en F*) |
+| T10 | 🟢 Baja | Dijkstra 1970 vs 1972 |
+| T11 | 🟢 Baja | Mock vs Spy: Spy llama al método real, Mock no |
+| T12 | 🟢 Baja | "Vectores NIST" sin explicar |
+| T13 | 🟢 Info | Ejemplo Lean correcto |
+
+---
+
+## Correcciones prioritarias
+
+**Imprescindible:**
+1. T1 — Corregir el pseudocódigo del Ariane 5 (usar `try_from().expect()` en vez de `as i16`, aclarar que el lenguaje era Ada, precisar el valor ~32768)
+
+**Recomendables (elevan significativamente la clase):**
+2. T2 — Agregar mención a mutation testing como puente desde el slide de cobertura
+3. T5 — Agregar una sección o al menos un slide sobre tests de integración
+4. T3 — Recomendar `#[should_panic(expected = "...")]` en vez de `#[should_panic]`
+5. T4 — Mencionar sanitizers en la sección de fuzzing
+
+**Opcionales (mejoran pero no son críticas):**
+6. T6 — Definir fuzz diferencial en una línea
+7. T7 — Mencionar TDD como metodología
+8. T9 — Precisar CompCert y seL4 en la tabla de verificación formal
